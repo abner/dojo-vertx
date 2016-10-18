@@ -1,3 +1,7 @@
+package br.gov.serpro.vertx.vertxapp;
+
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.AbstractVerticle;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -5,30 +9,69 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
+import io.vertx.core.Future;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.core.json.JsonObject;
 
-public class VertxServer {
+import br.gov.serpro.vertx.vertxapp.models.Bookmark;
 
-	private static final Map<Integer, Bookmark> BOOKMARKS = new HashMap<>();
+public class VertxServer extends AbstractVerticle {
 
-	private static final ObjectMapper mapper = new ObjectMapper();
+	private final Map<Integer, Bookmark> BOOKMARKS = new HashMap<>();
 
-	static {
-		BOOKMARKS.put(1, new Bookmark(1, "RocketChat", "http://chat.dev.sdr.serpro"));
-	}
+	private final ObjectMapper mapper = new ObjectMapper();
+
+	private Router router;
 
 	public static void main(String[] args) {
 
-		Vertx vertx = Vertx.vertx();
+ 		Integer port = 8080;
+        DeploymentOptions options = new DeploymentOptions()
+                .setConfig(
+                        new JsonObject()
+                                .put("http.port", port));
+        Vertx vertx = Vertx.vertx();
+        vertx.deployVerticle(new VertxServer(), options);
+		
+	}
 
-		HttpServer server = vertx.createHttpServer();
+	public VertxServer() {
+		BOOKMARKS.put(1, new Bookmark(1, "RocketChat Rocks!", "http://chat.dev.sdr.serpro"));
+	}
 
-		Router router = Router.router(vertx);
+	@Override
+    public void start(Future<Void> fut) throws Exception {
+        setupRouters();
+        vertx.createHttpServer().requestHandler(router::accept).listen(
+                config().getInteger("http.port", 8080),
+                result -> {
+                    if (result.succeeded()) {
+                        fut.complete();
+                    } else {
+                        fut.fail(result.cause());
+                    }
+                }
+        );
+    }
+
+	@Override
+    public void stop(Future<Void> fut) throws Exception {
+		System.out.println("Aplicação do DOJO diz BYE!");
+        fut.complete();
+    }
+
+
+
+	public void setupRouters() {
+
+		router = Router.router(vertx);
 
 		router.route().handler(BodyHandler.create());
 
@@ -41,23 +84,23 @@ public class VertxServer {
 		// PUT /bookmarks/:id
 		// DELETE /bookmarks/:id
 
-		router.route().handler(routingContext -> {
+		// router.route().handler(routingContext -> {
 
-			String header = routingContext.request().getHeader("Token");
+		// 	String header = routingContext.request().getHeader("Token");
 
-			if (!"senhasecreta".equals(header)) {
-				routingContext.fail(403);
-			} else {
-				routingContext.next();
-			}
+		// 	if (!"senhasecreta".equals(header)) {
+		// 		routingContext.fail(403);
+		// 	} else {
+		// 		routingContext.next();
 
-		});
-		
-		router.route(HttpMethod.GET, "/bookmarks").handler(routingContext -> {
+		// 	}
 
+		// });
+		router.route("/bookmarks").handler(routingContext -> {
 			HttpServerResponse response = routingContext.response();
 			response.putHeader("content-type", "application/json");
 
+			System.out.println("MICHEL");
 			// Write to the response and end it
 			try {
 				response.end(mapper.writeValueAsString(BOOKMARKS.values()));
@@ -162,6 +205,9 @@ public class VertxServer {
 			routingContext.response().setStatusCode(204).end("");
 		});
 
-		server.requestHandler(router::accept).listen(8080);
-	}
+	}	
+ 
+	
+
+	
 }
