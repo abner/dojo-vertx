@@ -1,3 +1,4 @@
+package br.gov.serpro.vertxapp.model;
 
 public class Bookmark {
 
@@ -6,6 +7,12 @@ public class Bookmark {
 	private String nome;
 
 	private String url;
+
+	private String _x = "X";
+
+	public String getX() {
+		return this._x;
+	}
 
 	public Bookmark() {
 	}

@@ -4,10 +4,110 @@
 	<groupId>br.gov.serpro.vertx</groupId>
 	<artifactId>br.gov.serpro.vertxapp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Archetype - br.gov.serpro.vertxapp</name>
+	<name>VertxApp</name>
 	<url>http://maven.apache.org</url>
 
+    <packaging>jar</packaging>
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.testSource>1.8</maven.compiler.testSource>
+		<maven.compiler.testTarget>1.8</maven.compiler.testTarget>
+		<maven-war-plugin.version>3.0.0</maven-war-plugin.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.vertx</groupId>
+				<artifactId>vertx-web</artifactId>
+				<version>3.3.3</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>io.dazraf</groupId>
+					<artifactId>vertx-hot-maven-plugin</artifactId>
+					<version>2.1.0</version>
+					<dependencies>
+						<dependency>
+							<groupId>io.vertx</groupId>
+							<artifactId>vertx-web</artifactId>
+							<version>3.3.3</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>io.dazraf</groupId>
+				<artifactId>vertx-hot-maven-plugin</artifactId>
+				<version>2.1.0</version>
+				<configuration>
+					<verticleReference>br.gov.serpro.vertxapp.VertxServer</verticleReference>
+					<!--<configFile>config filename</configFile>-->
+                    <buildResources>false</buildResources>
+				</configuration>
+			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.9</version>
+                <executions>
+                    <execution>
+                        <id>build-classpath</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputFile>classpath.txt</outputFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Main-Class>br.gov.serpro.vertxapp.VertxServer</Main-Class>
+                                        <Main-Verticle>br.gov.serpro.vertxapp.VertxServer</Main-Verticle>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <artifactSet />
+                            <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+		</plugins>
+	</build>
 	<dependencies>
 
 		<dependency>
