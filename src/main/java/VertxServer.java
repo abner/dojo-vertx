@@ -78,20 +78,10 @@ public class VertxServer extends AbstractVerticle {
 //			}
 //
 //		});
+		
+		BookmarkHandler bookmarkHandler = new BookmarkHandler(BOOKMARKS);
 
-		router.route(HttpMethod.GET, "/bookmarks").handler(routingContext -> {
-
-			HttpServerResponse response = routingContext.response();
-			response.putHeader("content-type", "application/json");
-
-			// Write to the response and end it
-			try {
-				response.end(mapper.writeValueAsString(BOOKMARKS.values()));
-			} catch (JsonProcessingException e) {
-				routingContext.fail(500);
-			}
-
-		});
+		router.route(HttpMethod.GET, "/bookmarks/*").handler(bookmarkHandler);
 
 		router.route(HttpMethod.GET, "/bookmarks/:id").handler(routingContext -> {
 			HttpServerResponse response = routingContext.response();
