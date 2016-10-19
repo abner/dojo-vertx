@@ -1,5 +1,6 @@
 package br.gov.serpro.vertx.vertxapp;
 
+import br.gov.serpro.vertx.vertxapp.json.CustomMapper;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.AbstractVerticle;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class VertxServer extends AbstractVerticle {
 
 	private final Map<Integer, Bookmark> BOOKMARKS = new HashMap<>();
 
-	private final ObjectMapper mapper = new ObjectMapper();
+	private final CustomMapper mapper = new CustomMapper();
 
 	private Router router;
 
