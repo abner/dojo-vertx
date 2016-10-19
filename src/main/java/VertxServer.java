@@ -5,30 +5,56 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
-public class VertxServer {
+public class VertxServer extends AbstractVerticle {
 
-	private static final Map<Integer, Bookmark> BOOKMARKS = new HashMap<>();
+	private final Map<Integer, Bookmark> BOOKMARKS = new HashMap<>();
 
-	private static final ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper mapper = new ObjectMapper();
+	
+	private Router router;
 
-	static {
+	public VertxServer() {
 		BOOKMARKS.put(1, new Bookmark(1, "RocketChat", "http://chat.dev.sdr.serpro"));
+		configurarRotas();
+	}
+
+	@Override
+	public void start(Future<Void> fut) throws Exception {
+		super.start();
+		
+		vertx.createHttpServer().requestHandler(router::accept).listen(
+                config().getInteger("http.port", 8080),
+                result -> {
+                    if (result.succeeded()) {
+                        fut.complete();
+                    } else {
+                        fut.fail(result.cause());
+                    }
+                }
+        );
 	}
 
 	public static void main(String[] args) {
-
+		Integer port = 8080;
+		DeploymentOptions options = new DeploymentOptions().setConfig(new JsonObject().put("http.port", port));
 		Vertx vertx = Vertx.vertx();
-
-		HttpServer server = vertx.createHttpServer();
-
-		Router router = Router.router(vertx);
+		vertx.deployVerticle(new VertxServer(), options);
+		
+		
+	}
+	
+	public void configurarRotas() {
+		router = Router.router(vertx);
 
 		router.route().handler(BodyHandler.create());
 
@@ -41,18 +67,18 @@ public class VertxServer {
 		// PUT /bookmarks/:id
 		// DELETE /bookmarks/:id
 
-		router.route().handler(routingContext -> {
+//		router.route().handler(routingContext -> {
+//
+//			String header = routingContext.request().getHeader("Token");
+//
+//			if (!"senhasecreta".equals(header)) {
+//				routingContext.fail(403);
+//			} else {
+//				routingContext.next();
+//			}
+//
+//		});
 
-			String header = routingContext.request().getHeader("Token");
-
-			if (!"senhasecreta".equals(header)) {
-				routingContext.fail(403);
-			} else {
-				routingContext.next();
-			}
-
-		});
-		
 		router.route(HttpMethod.GET, "/bookmarks").handler(routingContext -> {
 
 			HttpServerResponse response = routingContext.response();
@@ -71,8 +97,23 @@ public class VertxServer {
 			HttpServerResponse response = routingContext.response();
 			response.putHeader("content-type", "application/json");
 
-			String idParam = routingContext.pathParam("id");
-			Bookmark book = BOOKMARKS.get(Integer.parseInt(idParam));
+			String idParam = "0";
+			try {
+				idParam = routingContext.pathParam("id");
+			} catch (Exception e1) {
+				routingContext.fail(400);
+				return;
+			}
+			
+			Integer idInteger = null;
+			try {
+				idInteger = Integer.parseInt(idParam);
+			} catch (NumberFormatException e1) {
+				routingContext.fail(400);
+				return;
+			}
+			
+			Bookmark book = BOOKMARKS.get(idInteger);
 			if (book != null) {
 				try {
 					response.end(mapper.writeValueAsString(book));
@@ -103,20 +144,19 @@ public class VertxServer {
 					routingContext.fail(422);
 				} else {
 					BOOKMARKS.put(id, bookmark);
+					routingContext.response().setStatusCode(201).end("");
 				}
 
 			} catch (IOException e) {
 				routingContext.fail(400);
 			}
-			routingContext.response().setStatusCode(201).end("");
 		});
 
 		router.route(HttpMethod.PUT, "/bookmarks/:id").handler(routingContext -> {
 			HttpServerResponse response = routingContext.response();
 			response.putHeader("content-type", "application/json");
 
-			Integer idParam = Integer.valueOf(routingContext.pathParam("id"));		
-			
+			Integer idParam = Integer.valueOf(routingContext.pathParam("id"));
 
 			String bodyAsString = routingContext.getBodyAsString();
 
@@ -127,11 +167,12 @@ public class VertxServer {
 				if (BOOKMARKS.containsKey(idParam)) {
 					if (!idParam.equals(bookmark.getId())) {
 						routingContext.fail(422);
+						return;
 					}
 					BOOKMARKS.put(id, bookmark);
 
 					routingContext.response().setStatusCode(200).end("");
-					
+
 				} else {
 					routingContext.fail(404);
 				}
@@ -152,16 +193,13 @@ public class VertxServer {
 				Integer id = Integer.parseInt(idParam);
 				if (BOOKMARKS.containsKey(id)) {
 					BOOKMARKS.remove(id);
+					routingContext.response().setStatusCode(204).end("");
 				} else {
 					routingContext.fail(404);
 				}
 			} catch (NumberFormatException e) {
 				routingContext.fail(400);
-			}
-
-			routingContext.response().setStatusCode(204).end("");
+			}			
 		});
-
-		server.requestHandler(router::accept).listen(8080);
 	}
 }
