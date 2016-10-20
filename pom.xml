@@ -8,7 +8,7 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<exec.mainClass>VertxServer</exec.mainClass>
+		<exec.mainClass>br.gov.serpro.vertx.vertxapp.VertxServer</exec.mainClass>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.testSource>1.8</maven.compiler.testSource>
@@ -94,8 +94,8 @@
 								<argument>io.vertx.core.Launcher</argument>
 								<argument>run</argument>
 								<argument>--redeploy=src/main/java/**/*.java</argument>
-								<argument>--launcher-class=VertxServer</argument>
-								<!-- <argument>on-redeploy=mvn package</argument> -->
+								<argument>--launcher-class=br.gov.serpro.vertx.vertxapp.VertxServer</argument>
+								<argument>--on-redeploy=mvn package -DskipTests</argument>
 							</arguments>
 						</configuration>
 					</execution>

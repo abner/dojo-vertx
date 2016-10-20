@@ -1,3 +1,4 @@
+package br.gov.serpro.vertx.vertxapp.models;
 
 public class Bookmark {
 
