@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 export class SchemaConverter {
 
   public static convert(schema: Object): Object {

@@ -48,7 +48,7 @@ acorn@^3.2.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-3.3.0.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
 
-ajv@^4.7.0:
+ajv, ajv@^4.7.0:
   version "4.8.2"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-4.8.2.tgz#65486936ca36fea39a1504332a78bebd5d447bdc"
   dependencies:

@@ -1,23 +1,22 @@
 
 let bookmarkSchema = {
-
-    $bookmark: true,
+    type: 'object',
     properties: {
         bookmark: {
-            $bookmark: true,
+            type: 'object',
+            bookmark: true,
+            required: [ 'id', 'name', 'url'],
             properties: {
                 id: {
-                    type: 'number'
+                        type: 'number'
                 },
                 name: {
-                    type: 'string',
-                    required: true
+                    type: 'string'
                 },
                 url: {
-                    type: 'string',
-                    required: true
+                    type: 'string'
                 }
-            }
+            },
         }
     }
 }

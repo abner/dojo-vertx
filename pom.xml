@@ -115,6 +115,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>com.coveo</groupId>
+			<artifactId>nashorn-commonjs-modules</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+
+
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
 			<groupId>junit</groupId>

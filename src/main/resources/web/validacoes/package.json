@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@types/node": "^6.0.45",
+    "ajv": "^4.8.2",
     "schema-inspector": "^1.6.6"
   },
   "author": "Abner Oliveira",
