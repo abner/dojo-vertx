@@ -197,9 +197,7 @@ for(i=0; i< SchemaInspector[_.capitalize(schemaName)].validators.lenght; i++) {
                                             type: 'object',
                                             compile: validators[i].fn,
                                             error: 'full',
-                                            metaSchema: {
-                                                type: 'boolean'
-                                            }
+                                            metaSchema: validators[i].metaSchema
                                         }
     );
 }

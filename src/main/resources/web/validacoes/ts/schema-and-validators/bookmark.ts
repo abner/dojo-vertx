@@ -36,6 +36,9 @@ namespace SchemaInspector.Bookmark {
                     }
                 }
                 return bookmarkValidator;
+            },
+            metaSchema: {
+                type: 'boolean'
             }
         }
     ];

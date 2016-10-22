@@ -20,7 +20,7 @@ public class SchemaInspectorTest {
 
     @Test
     public void validatesUsingJsonSchema() throws IOException {
-        for(int i = 0; i < 25; i++) {
+        for(int i = 0; i < 1; i++) {
             Object object = mapper.readValue("{ \"bookmark\": { \"id\": 1 , \"name\": \"ABNER\"}}", Object.class);
             Object result = schemaInspector.validate("bookmark", object);
             String jsonResult = mapper.writeValueAsString(result);
