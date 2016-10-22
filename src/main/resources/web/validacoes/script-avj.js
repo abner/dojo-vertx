@@ -1,14 +1,15 @@
 
 if (!loaded) {
 
-var _ = require('lodash');
-var Ajv = require('ajv');
-
-
+ajv = new Ajv({ allErrors: true, verbose: false });
+//var _ = require('lodash');
+//var Ajv = require('ajv');
 
 // schema copiado do fonte do ajv e carregado diretamente aqui pois o
 // nashorn nao suporta carregar json via require
-var ajv = new Ajv({ meta: false, allErrors: true, verbose: false }); // options can be passed, e.g. {allErrors: true}
+/*var ajv = new Ajv({ meta: false, allErrors: true, verbose: false }); // options can be passed, e.g. {allErrors: true}
+
+
 ajv.addMetaSchema({
                                        "id": "http://json-schema.org/draft-04/schema#",
                                        "$schema": "http://json-schema.org/draft-04/schema#",
@@ -159,43 +160,64 @@ ajv.addMetaSchema({
                                        },
                                        "default": {}
                                    }, 'http://json-schema.org/draft-04/schema', true);
-
+*/
     lodaded = true;
 }
-// definindo esquema para o objeto bookmark
-var schema = require('./js/' + schemaName + '-schema');
+
+//// definindo esquema para o objeto bookmark
+//var schema = require('./js/' + schemaName + '-schema');
 
 
-print('SCHEMA: ', mapper.writeValueAsString(schema));
-print('VALUE: ', mapper.writeValueAsString(value));
+//var customValidator = null;
+//
+//try {
+//    customValidator = require('./js/' + schemaName + '-validator');
+//} catch(e) {
+//    print('NO CUSTOM VALIDATOR DEFINED TO ', schemaName);
+//}
+//
+//if (customValidator) {
+//    // adicionando um validator especifico
+//    ajv.addKeyword(schemaName,
+//                                {
+//                                    type: 'object',
+//                                    compile: customValidator,
+//                                    error: 'full',
+//                                    metaSchema: {
+//                                        type: 'boolean'
+//                                    }
+//                                }
+//    );
+//}
 
 
-var customValidator = null;
 
-try {
-    customValidator = require('./js/' + schemaName + '-validator');
-} catch(e) {
-    print('NO CUSTOM VALIDATOR DEFINED TO ', schemaName);
-}
-
-if (customValidator) {
-    // adicionando um validator especifico
-    ajv.addKeyword(schemaName,
-                                {
-                                    type: 'object',
-                                    compile: customValidator,
-                                    error: 'full',
-                                    metaSchema: {
-                                        type: 'boolean'
-                                    }
-                                }
+for(i=0; i< SchemaInspector[_.capitalize(schemaName)].validators.lenght; i++) {
+    ajv.addKeyword(validators[i].name, {
+                                            type: 'object',
+                                            compile: validators[i].fn,
+                                            error: 'full',
+                                            metaSchema: {
+                                                type: 'boolean'
+                                            }
+                                        }
     );
 }
+
+
+var schema = SchemaInspector[_.capitalize(schemaName)].schema;
+
+// print('SCHEMA: ', mapper.writeValueAsString(schema));
+// print('VALUE: ', mapper.writeValueAsString(value));
 
 // executa a validacao
 var validate = ajv.compile(schema);
 
-var result = validate(value);
+var obj = {};
+obj[schemaName] = value;
+
+var result = validate(obj);
+
 if(!result) {
     result = validate.errors;
 }

@@ -3,56 +3,12 @@
   "version": "1.0.0",
   "description": "Validadores para a aplicação bookmark",
   "scripts": {
-    "test": "nyc mocha --require reflect-metadata  --require ts-node/register --opts ./mocha.opts",
-    "test:debug": "karma start --debug",
-    "compile": "webpack"
+    "compile": "tsc -p ts"
   },
-  "nyc": {
-    "include": [
-      "ts/**/*.ts",
-      "ts/**/*.tsx"
-    ],
-    "exclude": [
-      "ts/**/*.spec.ts",
-      "node_modules/",
-      "dist/"
-    ],
-    "extension": [
-      ".ts",
-      ".tsx"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
-    "reporter": [
-      "text-summary",
-      "html"
-    ],
-    "sourceMap": false,
-    "instrument": true
-  },
-  "dependencies": {
-    "@types/node": "^6.0.45",
-    "ajv": "^4.8.2",
-    "schema-inspector": "^1.6.6"
-  },
+  "dependencies": {},
   "author": "Abner Oliveira",
   "license": "MIT",
   "devDependencies": {
-    "@types/chai": "^3.4.34",
-    "@types/lodash": "^4.14.37",
-    "@types/mocha": "^2.2.32",
-    "@types/webpack": "^1.12.34",
-    "@types/yargs": "0.0.31",
-    "awesome-typescript-loader": "^2.2.4",
-    "devtool": "^2.3.0",
-    "nyc": "^8.3.2",
-    "ts-node": "1.6.0",
-    "tslint": "^3.15.1",
-    "tslint-loader": "^2.1.5",
-    "typescript": "^2.0.3",
-    "webpack": "^2.1.0-beta.25",
-    "webpack-node-externals": "^1.4.3",
-    "yargs": "^6.0.0"
+    "typescript": "^2.0.3"
   }
 }
