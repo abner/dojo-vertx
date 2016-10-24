@@ -9,6 +9,7 @@
   "author": "Abner Oliveira",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^2.0.3"
+    "@types/lodash": "^4.14.37",
+    "typescript": "~2.0.3"
   }
 }

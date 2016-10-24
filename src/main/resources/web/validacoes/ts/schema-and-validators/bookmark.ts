@@ -1,4 +1,5 @@
 
+declare var _: _.LoDashStatic;
 
 namespace SchemaInspector.Bookmark {
     export var schema = {
